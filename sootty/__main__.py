@@ -5,6 +5,7 @@ from .exceptions import SoottyError
 from .save import save_query, reload_query
 from .storage import WireTrace
 from .visualizer import Visualizer
+from .FST import VerilatorConverter
 
 
 def parse_args():
@@ -128,7 +129,10 @@ def main():
         raise SoottyError("Input file is required. See --help for more info.")
 
     # Load vcd or evcd file into wiretrace object.
-    wiretrace = WireTrace.from_vcd(filename)
+    if filename[-3:] == 'fst':
+        wiretrace = WireTrace.from_vcd(VerilatorConverter(filename).convert_to_vcd())
+    else:
+        wiretrace = WireTrace.from_vcd(filename)
 
     # Check that window bounds are well-defined.
     if end is not None and length is not None:
